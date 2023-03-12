@@ -50,3 +50,40 @@ def getNotes(request):
     notes = Note.objects.all()
     serializer = NoteSearializer(notes, many=True)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def getNote(request, pk):
+    note = Note.objects.get(id=pk)
+    serializer = NoteSearializer(note, many=False)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def createNote(request):
+    data = request.data
+
+    note = Note.objects.create(
+        body=data['body']
+    )
+    serializer = NoteSearializer(note, many=False)
+    return Response(serializer.data)
+
+
+@api_view(['PUT'])
+def updateNote(request, pk):
+    data = request.data
+
+    note = Note.objects.get(id=pk)
+    serializer = NoteSearializer(note, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+
+    return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+def deleteNote(request, pk):
+    note = Note.objects.get(id=pk)
+    note.delete()
+    return Response("Note was deleted!")
